@@ -13,6 +13,8 @@
 #include <string>
 #include "fichier.h"
 #include <boost/regex.hpp>
+#include <ctime>
+#include "SQLiteDataBase.h"
 
 
 std::string trim(std::string);
@@ -42,5 +44,7 @@ RappObs& construireRappObs(std::string&, RappObs&);
 Bulletin& creerRappObs(std::vector<std::string>& blocBull, Bulletin&, std::string&);
 Bulletin& creerBulletin(std::vector<std::string>&, Bulletin&, std::string&);
 Bulletin& construireBulletin(std::vector<std::string>&, Bulletin&);
+//std::string& datetodayToString();
+const std::string currentDateTime();
 
 #endif /* LIB_H_ */

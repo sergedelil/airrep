@@ -12,6 +12,7 @@
 #include <vector>
 #include "fichier.h"
 #include "lib.h"
+#include "SQLiteDataBase.h"
 
 
 /*
@@ -73,6 +74,24 @@ void Fichier::ajouterBulletin(Bulletin& bulletin){
 		bulletins.push_back(bulletin);
 }
 
+void Fichier::ecrireEnSqlite(std::string& filname, std::string& schema){
+
+	std::vector<Bulletin> bulletins = this-> getBulletins();
+	SQLiteDataBase db_;
+	db_.open('V');
+	db_.loadSchema(schema);
+	db_.insert(bulletins);
+
+	SQLiteDataBase db;
+	db.open('P', filname);
+	db.loadSchema(schema);
+
+	db_.copy(db);
+	db_.close();
+
+
+}
+
 void Fichier::afficherFichier(){
 
 	for (unsigned int i = 0; i < this -> getBulletins().size(); i++){
@@ -82,17 +101,19 @@ void Fichier::afficherFichier(){
 		std::cout << "heure = "<< this -> getBulletins()[i].getHour() << std::endl;
 
 		for (unsigned int j = 0; j < this -> getBulletins()[i].getRappsObs().size(); j++){
-			std::cout << "-------------------------------" << std::endl;
+			std::cout << "-----------------------------------------" << std::endl;
 			std::cout << "type = "<< this -> getBulletins()[i].getRappsObs()[j].getType() << std::endl;
 			std::cout << "idFly = "<< this -> getBulletins()[i].getRappsObs()[j].getIdFly() << std::endl;
 			std::cout << "latitude = "<< this -> getBulletins()[i].getRappsObs()[j].getLatitude() << std::endl;
 			std::cout << "longitude = "<< this -> getBulletins()[i].getRappsObs()[j].getLongitude() << std::endl;
 			std::cout << "hhmm = "<< this -> getBulletins()[i].getRappsObs()[j].gethhmm() << std::endl;
-			std::cout << "pression = "<< this -> getBulletins()[i].getRappsObs()[j].getPressure() << std::endl;
-			std::cout << "temperature = "<< this -> getBulletins()[i].getRappsObs()[j].getTemperature() << std::endl;
-			std::cout << "windDir = "<< this -> getBulletins()[i].getRappsObs()[j].getWindDir() << std::endl;
-			std::cout << "windSeep = "<< this -> getBulletins()[i].getRappsObs()[j].getWindSpeed() << std::endl;
-			std::cout << "turbulence = "<< this -> getBulletins()[i].getRappsObs()[j].getTurbulence() << std::endl;
+			for (unsigned int k = 0; k < this -> getBulletins()[i].getRappsObs()[j].getObservations().size(); j++){
+				std::cout << "***************************" << std::endl;
+				std::cout <<  this -> getBulletins()[i].getRappsObs()[j].getObservations()[k].getElement()
+						  <<  this -> getBulletins()[i].getRappsObs()[j].getObservations()[k].getDescription()
+						  << this -> getBulletins()[i].getRappsObs()[j].getObservations()[k].getValeur()
+						  << this -> getBulletins()[i].getRappsObs()[j].getObservations()[k].getUnit()<< std::endl;
+			}
 		}
 	}
 }

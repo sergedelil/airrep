@@ -10,6 +10,8 @@
 
 
 #include <string>
+#include <vector>
+#include "observation.h"
 
 class RappObs{
 public:
@@ -18,22 +20,26 @@ public:
 	double getLatitude() const;
 	double getLongitude() const;
 	std::string gethhmm() const;
-	double getPressure() const;
-	double getTemperature() const;
-	double getWindDir() const;
-	double getWindSpeed() const;
-	std::string getTurbulence() const;
-
+	//double getAltitude() const;
+	//double getPressure() const;
+	//double getTemperature() const;
+	//double getWindDir() const;
+	//double getWindSpeed() const;
+	//std::string getTurbulence() const;
+	std::vector<Observation> getObservations();
+	void ajouterObs(Observation&);
 	void setType(std::string&);
 	void setIdFly(std::string&);
 	void setLatitude(double);
 	void setLongitude(double);
 	void sethhmm(std::string&);
-	void setPressure(double);
-	void setTemperature(double);
-	void setWindDir(double);
-	void setWindSpeed(double);
-	void setTurbulence(std::string&);
+	//void setPressure(double);
+	//void setAltitude(double);
+	//void setTemperature(double);
+	//void setWindDir(double);
+	//void setWindSpeed(double);
+	//void setTurbulence(std::string&);
+
 
 private:
 	std::string type;
@@ -41,11 +47,13 @@ private:
 	double latitude;
 	double longitude;
 	std::string hhmm;
-	double pressure;
-	double temperature;
-	double windDir;
-	double windSpeed;
-	std::string turbulence;
+	//double altitude;
+	//double pressure;
+	//double temperature;
+	//double windDir;
+	//double windSpeed;
+	//std::string turbulence;
+	std::vector<Observation> observations;
 
 friend std::istream& operator >> (std::istream&, RappObs&);
 //friend std::ostream& operator << (std::ostream&, const RappObs&);

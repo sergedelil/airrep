@@ -6,10 +6,10 @@
  */
 
 #include <cctype>
-#include <iostream>
-#include <vector>
+//#include <iostream>
+//#include <vector>
 #include <fstream>
-#include <string>
+//#include <string>
 #include <cmath>
 #include "lib.h"
 #include <stdlib.h>     /* exit, EXIT_FAILURE */
@@ -182,10 +182,14 @@ double convertirLongitude(std::string& champ){
 	return lon;
 }
 
-double convertirPression(std::string& champ){
-	double alt = atoi(champ.substr(1).c_str()) * 30.48 + 0.5;
+double convertirPression(double alt){
 	double pression = 10133 * pow((1 - alt * 0.0000068756), 5.2559);
 	return pression;
+}
+
+double convertirAltitude(std::string& champ){
+	double alt = atoi(champ.substr(1).c_str()) * 30.48 + 0.5;
+	return alt;
 }
 
 double convertirTemperature(std::string& champ){
@@ -233,67 +237,88 @@ std::string extraireChamp(std::string ligne, boost::regex rgx){
 	return resultat;
 }
 
-RappObs& construireRappObs(std::string& ligne, RappObs& obs){
+Observation& initStaticObservation(Observation& obs, int codeElem, std::string desc, double val, std::string _unit ){
+	obs.setElement(codeElem);
+	obs.setDescription(desc);
+	obs.setValeur(val);
+	obs.setUnit(_unit);
+	return obs;
+}
+
+RappObs& construireRappObs(std::string& ligne, RappObs& leRappObs){
 
 	std::string _typId = extraireChamp(ligne, typId);
-	obs.setType(_typId);
+	leRappObs.setType(_typId);
 
 	std::string _idFly = extraireChamp(ligne, idFly);
-	obs.setIdFly(_idFly);
+	leRappObs.setIdFly(_idFly);
 
 	std::string _latLon = extraireChamp(ligne, latLon);
 	double latitude = convertirLatitude(_latLon);
-	obs.setLatitude(latitude);
+	leRappObs.setLatitude(latitude);
 
 	double longitude = convertirLongitude(_latLon);
-	obs.setLongitude(longitude);
+	leRappObs.setLongitude(longitude);
 
 	std::string _hhmm = extraireChamp(ligne, hhmm);
-	obs.sethhmm(_hhmm);
+	leRappObs.sethhmm(_hhmm);
 
 	std::string _flyLvl = extraireChamp(ligne, flightLevel);
 	if (_flyLvl != ""){
-		double pression = convertirPression(_flyLvl);
-		obs.setPressure(pression);
+		double alt = convertirAltitude(_flyLvl);
+		double pression = convertirPression(alt);
+		Observation pres;
+		pres = initStaticObservation(pres, 7001, "PRESSION", pression, "PA");
+		leRappObs.ajouterObs(pres);
+		Observation alti;
+		alti = initStaticObservation(alti, 7002, "ALTITUDE", alt, "M");
+		leRappObs.ajouterObs(alti);
 	}
 
 	std::string _temp = extraireChamp(ligne, temperature);
 	if ( _temp != ""){
 		double temp = convertirTemperature(_temp);
-		obs.setTemperature(temp);
+		Observation tempe;
+		tempe = initStaticObservation(tempe, 12001, "TEMPERATURE", temp, "K");
+		leRappObs.ajouterObs(tempe);
 	}
 
 	std::string vent = extraireChamp(ligne, wind);
 	if ( vent != ""){
 		double windD = convertirWinDir(vent);
-		obs.setWindDir(windD);
+		Observation ventD;
+		ventD = initStaticObservation(ventD,11001, "DIRECTION DU VENT", windD, "DEG");
+		leRappObs.ajouterObs(ventD);
 
 		double winds = convertirWindSpeed(vent);
-		obs.setWindSpeed(winds);
+		Observation ventS;
+		ventS = initStaticObservation(ventS, 11002, "VITESSE DU VENT", winds, "M/S");
+		leRappObs.ajouterObs(ventS);
 	}
 
 	std::string _turb = extraireChamp(ligne, turbulence);
 	if (_turb != ""){
-		obs.setTurbulence(_turb);
+		Observation tub;
+		tub = initStaticObservation(tub, 11031, _turb, 0.0, "");
+		leRappObs.ajouterObs(tub);
 	}
-
-	return obs;
+	return leRappObs;
 }
 
 Bulletin& creerRappObs(std::vector<std::string>& blocBull, Bulletin& bull, std::string& leType){
 
-	RappObs obs;
+	RappObs obsRapp;
 	if (leType == "AIREP"){
 
 		for(unsigned int i = 3; i < blocBull.size(); i++){
 			std::string ligne = leType + " " + blocBull[i];
-			obs = construireRappObs(ligne, obs);
-			bull.ajouterRappObs(obs);
+			obsRapp = construireRappObs(ligne, obsRapp);
+			bull.ajouterRappObs(obsRapp);
 		}
 	}else{
 		for(unsigned int i = 2; i < blocBull.size(); i++){
-			obs = construireRappObs(blocBull[i], obs);
-			bull.ajouterRappObs(obs);
+			obsRapp = construireRappObs(blocBull[i], obsRapp);
+			bull.ajouterRappObs(obsRapp);
 		}
 	}
 	return bull;
@@ -322,4 +347,14 @@ Bulletin& construireBulletin(std::vector<std::string>& blocBull, Bulletin& bull)
 	bull = creerBulletin(blocBull, bull, leType);
 
 	return bull;
+}
+
+// Get current date/time in string, format is YYYY-MM-DD HH:mm:ss
+const std::string currentDateTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
+    return buf;
 }

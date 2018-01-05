@@ -10,6 +10,7 @@
 #include <fstream>
 #include "fichier.h"
 
+
 using namespace std;
 
 int main(int argc, const char** argv){
@@ -25,7 +26,13 @@ int main(int argc, const char** argv){
 	}
 
 	Fichier fichier;
+	std::string fichierSqlite = argv[2];
+	std::string schemea = argv[3];
+
 	monFlux >> fichier;
-	fichier.afficherFichier();
+	//fichier.afficherFichier();
+
+	fichier.ecrireEnSqlite(fichierSqlite, schemea);
+
 	return 0;
 } // fin main

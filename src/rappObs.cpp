@@ -32,6 +32,18 @@ std::string RappObs::gethhmm() const{
 	return hhmm;
 }
 
+std::vector<Observation> RappObs::getObservations(){
+	return observations;
+}
+
+void RappObs::ajouterObs(Observation& obs){
+	observations.push_back(obs);
+
+}
+/*double RappObs::getAltitude() const{
+	return altitude;
+}
+
 double RappObs::getPressure() const{
 	return pressure;
 }
@@ -50,7 +62,7 @@ double RappObs::getWindSpeed() const{
 
 std::string RappObs::getTurbulence() const{
 	return turbulence;
-}
+}*/
 
 void RappObs::setType(std::string& _type){
 	type = _type;
@@ -67,6 +79,10 @@ void RappObs::setLongitude(double _longitude){
 void RappObs::sethhmm(std::string& _dateHour){
 	hhmm = _dateHour;
 }
+/*void RappObs::setAltitude(double _altitude){
+	altitude = _altitude;
+}
+
 void RappObs::setPressure(double _pressure){
 	pressure = _pressure;
 }
@@ -81,7 +97,7 @@ void RappObs::setWindSpeed(double _windSpeed){
 }
 void RappObs::setTurbulence(std::string& _turbulence){
 	turbulence = _turbulence;
-}
+}*/
 
 std::istream& operator >> (std::istream& monFlux, RappObs&){
 	return monFlux;

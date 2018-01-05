@@ -38,6 +38,7 @@ class Fichier{
 		std::vector<Bulletin> getBulletins();
 		void ajouterBulletin(Bulletin&);
 		void afficherFichier();
+		void ecrireEnSqlite(std::string&, std::string&);
 	private:
 		std::vector<Bulletin> bulletins;
 
